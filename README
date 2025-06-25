@@ -1,4 +1,13 @@
-i interested in audio.
-so far can input mono .wav files and by normalising this as many f32 in a vector, through stft. we end up with a spectrogram. 
+im interested in audio.
+all this does is take in a wav file from the samples folder (mono,stereo | bitrange - 16, 24, 32)
+reads it as a vector
+normalises it within the ranges of [-1,1]
+applies the short time fourier transform algorithm which gives you the spectrogram
+in main.rs i use the plotters crate to visualise it.
+the graphs are poorly iillustrated, but the x axis is basically time (each frame), 
+and the y axis is the magnitude, so real^2 + imaginary^2 = mag^2. 
+for stereo, the red points represent the 1st channel (left), and black represents the 2nd channel (right)
 
-TODO - learn plotters so u can visualise it
+TODO 
+might take machine learning route now. 
+
