@@ -1,0 +1,4 @@
+im interested in audio.
+so far can input mono .wav files and by normalising this as many f32 in a vector, through stft. we end up with a spectrogram. 
+
+TODO - learn plotters so u can visualise it
