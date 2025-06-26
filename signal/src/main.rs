@@ -1,4 +1,5 @@
 mod fft;
+mod mask;
 mod normal;
 use std::hint;
 
@@ -23,6 +24,7 @@ fn main() -> Result<()> {
             let n_f32: Result<Vec<f32>> = normal::monowav_to_f32(path);
             let spectrogram = fft::mono_stft(n_f32.expect("FAIL"));
             //(n_frame -> spectrogram.len() ,magnitude -> (2)^1/2)
+            mask::mono_mask(&spectrogram, 0.1);
             let mut ctx = ChartBuilder::on(&root)
                 .set_label_area_size(LabelAreaPosition::Left, 40)
                 .set_label_area_size(LabelAreaPosition::Bottom, 40)
