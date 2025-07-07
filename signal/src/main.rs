@@ -51,21 +51,19 @@ fn main() -> Result<()> {
 
             //vec to wav
             let spec = WavSpec {
-                channels: 1,         // Mono audio
-                sample_rate: 44100,  // Typically 44100 (CD quality) or 48000
-                bits_per_sample: 32, // 32-bit float (for f32 samples)
+                channels: 1,
+                sample_rate: 44100,
+                bits_per_sample: 32,
                 sample_format: hound::SampleFormat::Float,
             };
 
             let mut writer =
                 WavWriter::create("/home/raws4uce/rickjames/signal/output/sine.wav", spec)?;
 
-            // Write each sample (convert to f32 explicitly for safety)
             for &sample in op_vec.iter() {
                 writer.write_sample(sample)?;
             }
 
-            // Finalize the file
             writer.finalize()?;
 
             let mut ctx = ChartBuilder::on(&root)
