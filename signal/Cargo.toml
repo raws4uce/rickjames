@@ -1,13 +1,3 @@
-# Implement NMF using alternating minimisation
-# Decompose magnitude spectrogram
-# Assign basis vectors to sources manually
-# Apply mask and reconstruct
-#
-# Add CLI args or config
-# Plot spectrograms with plotters
-# Optional: egui UI to view spectrum in real time
-# Package + write README
-
 [package]
 name = "signal"
 version = "0.1.0"
