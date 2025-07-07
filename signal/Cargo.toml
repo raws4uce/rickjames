@@ -1,31 +1,12 @@
-#Separate vocals from background music in a mixed audio file using:
-#STFT (Short-Time Fourier Transform)
-#Masking heuristics or NMF
-#ISTFT to reconstruct separated signals
+# Implement NMF using alternating minimisation
+# Decompose magnitude spectrogram
+# Assign basis vectors to sources manually
+# Apply mask and reconstruct
 #
-# Week 1: STFT / ISTFT Pipeline
-#  Load mono .wav file
-#  Implement STFT (use rustfft, ndarray)
-#  Display magnitude spectrogram
-#  Implement ISTFT and reconstruct original signal
-#  Verify accuracy (reconstruction ≈ input)
-#
-# Week 2: Spectrogram Masking
-#  Implement simple heuristic masking (e.g. median filtering or energy threshold)
-#  Apply mask and reconstruct vocals vs accompaniment
-#  Listen to results, tune parameters
-#
-# Week 3: NMF-based Separation
-#  Implement NMF using alternating minimisation
-#  Decompose magnitude spectrogram
-#  Assign basis vectors to sources manually
-#  Apply mask and reconstruct
-#
-# Week 4: Visualisation + Polish
-#  Add CLI args or config
-#  Plot spectrograms with plotters
-#  Optional: egui UI to view spectrum in real time
-#  Package + write README
+# Add CLI args or config
+# Plot spectrograms with plotters
+# Optional: egui UI to view spectrum in real time
+# Package + write README
 
 [package]
 name = "signal"

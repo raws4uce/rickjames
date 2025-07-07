@@ -1,19 +1,39 @@
 mod fft;
+mod ifft;
 mod mask;
 mod normal;
-use std::hint;
+use core::f32;
 
 use anyhow::{Ok, Result};
+use hound::{WavSpec, WavWriter};
 use plotters::coord::types::RangedCoordf32;
 use plotters::prelude::*;
 use rustfft::num_complex::Complex;
+
+// struct MonoSpectrogram {
+//     spectrogram: Vec<Vec<Complex<f32>>>,
+//     mask: f32,
+//     max_mag: f32,
+// }
+//
+//do when bored
+// impl MonoSpectrogram {
+//     fn new() -> MonoSpectrogram {
+//         MonoSpectrogram {
+//             spectrogram: vec![],
+//             mask: 1.0,
+//             max_mag: f32::MIN,
+//         }
+//     }
+// }
+
 fn main() -> Result<()> {
-    let path: &str = "/home/raws4uce/rickjames/signal/samples/mono_24_5bumps.wav";
+    let path: &str = "/home/raws4uce/rickjames/signal/samples/istft_test_sine.wav";
     let mut reader_ = hound::WavReader::open(path)?;
     let spect = reader_.spec();
 
     let root = BitMapBackend::new(
-        "/home/raws4uce/rickjames/signal/photo/mo_24_5.png",
+        "/home/raws4uce/rickjames/signal/photo/sine.png",
         (1024, 720),
     )
     .into_drawing_area();
@@ -22,14 +42,37 @@ fn main() -> Result<()> {
     match spect.channels {
         1 => {
             let n_f32: Result<Vec<f32>> = normal::monowav_to_f32(path);
-            let spectrogram = fft::mono_stft(n_f32.expect("FAIL"));
+            let mut spectrogram = fft::mono_stft(n_f32.expect("FAIL"));
             //(n_frame -> spectrogram.len() ,magnitude -> (2)^1/2)
-            mask::mono_mask(&spectrogram, 0.1);
+
+            // mask audio
+            let mut spectrogram = mask::mono_mask(&spectrogram, 0.5);
+            let op_vec: Vec<f32> = ifft::mono_inverse(&mut spectrogram);
+
+            //vec to wav
+            let spec = WavSpec {
+                channels: 1,         // Mono audio
+                sample_rate: 44100,  // Typically 44100 (CD quality) or 48000
+                bits_per_sample: 32, // 32-bit float (for f32 samples)
+                sample_format: hound::SampleFormat::Float,
+            };
+
+            let mut writer =
+                WavWriter::create("/home/raws4uce/rickjames/signal/output/sine.wav", spec)?;
+
+            // Write each sample (convert to f32 explicitly for safety)
+            for &sample in op_vec.iter() {
+                writer.write_sample(sample)?;
+            }
+
+            // Finalize the file
+            writer.finalize()?;
+
             let mut ctx = ChartBuilder::on(&root)
                 .set_label_area_size(LabelAreaPosition::Left, 40)
                 .set_label_area_size(LabelAreaPosition::Bottom, 40)
                 .caption("magnitude by time", ("sans-serif", 40))
-                .build_cartesian_2d(0..spectrogram.len(), 0.0..8.0)
+                .build_cartesian_2d(0..spectrogram.len(), 0.0..150.0)
                 .unwrap();
 
             ctx.configure_mesh().draw().unwrap();
@@ -42,11 +85,15 @@ fn main() -> Result<()> {
         2 => {
             let n_f32: Result<Vec<(f32, f32)>> = normal::stereowav_to_f32(path);
             let spectrogram = fft::stereo_stft(n_f32.expect("FAIL"));
+
+            // mask audio
+            // let spectrogram = mask::stero_mask(spectrogram, 0.8);
+
             let mut ctx = ChartBuilder::on(&root)
                 .set_label_area_size(LabelAreaPosition::Left, 40)
                 .set_label_area_size(LabelAreaPosition::Bottom, 40)
                 .caption("magnitude by time", ("sans-serif", 40))
-                .build_cartesian_2d(0..spectrogram.len(), 0.0..8.0)
+                .build_cartesian_2d(0..spectrogram.len(), 0.0..500.0)
                 .unwrap();
 
             ctx.configure_mesh().draw().unwrap();
