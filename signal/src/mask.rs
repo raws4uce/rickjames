@@ -23,11 +23,12 @@ pub fn mono_mask(gram: &Vec<Vec<Complex<f32>>>, degree: f32) -> Vec<Vec<Complex<
             f.iter()
                 .map(|c| {
                     let mag = (c.re * c.re + c.im * c.im).sqrt();
-                    if a <= mag {
-                        *c // Directly clone the complex number k
+                    let factor = if mag >= a {
+                        1.0
                     } else {
-                        Complex { re: 0.0, im: 0.0 }
-                    }
+                        mag / a // smooth falloff
+                    };
+                    *c * factor
                 })
                 .collect()
         })

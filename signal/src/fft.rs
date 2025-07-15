@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use anyhow::{Ok, Result};
 use rustfft::{
     FftPlanner,
@@ -107,8 +109,22 @@ pub fn stereo_stft(samples: Vec<(f32, f32)>) -> Vec<Vec<(Complex<f32>, Complex<f
     spectrogram
 }
 pub fn window(size: usize) -> Vec<f32> {
-    //w[n] = 1/2 * cos(1- 2npi/(N-1))
+    //blackman window
+    //w(n) = a0 - a1 cos(2pin/N-1) + a2 cos(4pin/N-1)
+    let a0 = 0.42659;
+    let a1 = 0.49656;
+    let a2 = 0.076849;
+
     (0..size)
-        .map(|n| 0.5 * (1.0 - (2.0 * std::f32::consts::PI * n as f32 / (size - 1) as f32)).cos())
+        .map(|n| {
+            a0 - a1 * (2 as f32 * std::f32::consts::PI * n as f32 / (size - 1) as f32).cos()
+                + a2 * (4 as f32 * std::f32::consts::PI * n as f32 / (size - 1) as f32).cos()
+        })
         .collect()
+
+    // // hanning window i think
+    // //w[n] = 1/2 * cos(1- 2npi/(N-1))
+    // (0..size)
+    //     .map(|n| 0.5 * (1.0 - (2.0 * std::f32::consts::PI * n as f32 / (size - 1) as f32)).cos())
+    //     .collect()
 }
