@@ -50,38 +50,28 @@ fn main() -> Result<()> {
             //output wav
             let mut op_vec: Vec<f32> = ifft::mono_inverse(&mut spectrogram);
 
-            //vec to wav i used ai
-            {
-                //for 16
+            let spec = WavSpec {
+                channels: 1,
+                sample_rate: 44100,
+                bits_per_sample: 32,
+                sample_format: hound::SampleFormat::Float,
+            };
+
+            let mut writer =
+                WavWriter::create("/home/raws4uce/rickjames/signal/output/mono24.wav", spec)?;
+
+            // Normalize to [-1.0, 1.0]
+            let max_val = op_vec.iter().fold(0.0f32, |acc, &x| acc.max(x.abs()));
+            if max_val > 0.0 {
+                op_vec.iter_mut().for_each(|x| *x /= max_val);
             }
-            {
-                //for 24
+
+            // Write as-is (f32 format expects float samples in [-1.0, 1.0])
+            for &sample in op_vec.iter() {
+                writer.write_sample(sample)?;
             }
-            {
-                //for f32
-                let spec = WavSpec {
-                    channels: 1,
-                    sample_rate: 44100,
-                    bits_per_sample: 32,
-                    sample_format: hound::SampleFormat::Float,
-                };
 
-                let mut writer =
-                    WavWriter::create("/home/raws4uce/rickjames/signal/output/mono24.wav", spec)?;
-
-                // Normalize to [-1.0, 1.0]
-                let max_val = op_vec.iter().fold(0.0f32, |acc, &x| acc.max(x.abs()));
-                if max_val > 0.0 {
-                    op_vec.iter_mut().for_each(|x| *x /= max_val);
-                }
-
-                // Write as-is (f32 format expects float samples in [-1.0, 1.0])
-                for &sample in op_vec.iter() {
-                    writer.write_sample(sample)?;
-                }
-
-                writer.finalize()?;
-            }
+            writer.finalize()?;
             let mut ctx = ChartBuilder::on(&root)
                 .set_label_area_size(LabelAreaPosition::Left, 40)
                 .set_label_area_size(LabelAreaPosition::Bottom, 40)
@@ -105,44 +95,34 @@ fn main() -> Result<()> {
 
             let mut op_vec: Vec<(f32, f32)> = ifft::stereo_inverse(&mut spectrogram);
 
-            //vec to wav i used ai
-            {
-                //for 16
+            let spec = WavSpec {
+                channels: 2,
+                sample_rate: 44100,
+                bits_per_sample: 32,
+                sample_format: hound::SampleFormat::Float,
+            };
+
+            let mut writer =
+                WavWriter::create("/home/raws4uce/rickjames/signal/output/stereo16.wav", spec)?;
+
+            // Normalize to [-1.0, 1.0]
+            let l_max = op_vec.iter().fold(0.0f32, |acc, &x| acc.max(x.0.abs()));
+            let r_max = op_vec.iter().fold(0.0f32, |acc, &x| acc.max(x.1.abs()));
+
+            if l_max > 0.0 {
+                op_vec.iter_mut().for_each(|x| x.0 /= l_max);
             }
-            {
-                //for 24
+            if r_max > 0.0 {
+                op_vec.iter_mut().for_each(|x| x.1 /= l_max);
             }
-            {
-                //for f32
-                let spec = WavSpec {
-                    channels: 2,
-                    sample_rate: 44100,
-                    bits_per_sample: 32,
-                    sample_format: hound::SampleFormat::Float,
-                };
 
-                let mut writer =
-                    WavWriter::create("/home/raws4uce/rickjames/signal/output/stereo16.wav", spec)?;
-
-                // Normalize to [-1.0, 1.0]
-                let l_max = op_vec.iter().fold(0.0f32, |acc, &x| acc.max(x.0.abs()));
-                let r_max = op_vec.iter().fold(0.0f32, |acc, &x| acc.max(x.1.abs()));
-
-                if l_max > 0.0 {
-                    op_vec.iter_mut().for_each(|x| x.0 /= l_max);
-                }
-                if r_max > 0.0 {
-                    op_vec.iter_mut().for_each(|x| x.1 /= l_max);
-                }
-
-                // Write as-is (f32 format expects float samples in [-1.0, 1.0])
-                for &sample in op_vec.iter() {
-                    writer.write_sample(sample.0)?;
-                    writer.write_sample(sample.1)?;
-                }
-
-                writer.finalize()?;
+            // Write as-is (f32 format expects float samples in [-1.0, 1.0])
+            for &sample in op_vec.iter() {
+                writer.write_sample(sample.0)?;
+                writer.write_sample(sample.1)?;
             }
+
+            writer.finalize()?;
             let mut ctx = ChartBuilder::on(&root)
                 .set_label_area_size(LabelAreaPosition::Left, 40)
                 .set_label_area_size(LabelAreaPosition::Bottom, 40)
