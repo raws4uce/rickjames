@@ -3,7 +3,6 @@ use std::i16;
 pub fn monowav_to_f32(path: &str) -> Result<Vec<f32>> {
     let mut reader = hound::WavReader::open(path)?;
     let spec = reader.spec();
-    assert_eq!(spec.channels, 1, "supposed to be mono file");
 
     //normalise [-1,1]
     let samples: Vec<f32> = match spec.bits_per_sample {

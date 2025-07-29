@@ -1,8 +1,5 @@
-mod fft;
-mod ifft;
-mod mask;
-mod normal;
 use core::f32;
+use signal::{fft, ifft, mask, normal};
 
 use anyhow::{Ok, Result};
 use hound::{WavSpec, WavWriter};
@@ -123,6 +120,7 @@ fn main() -> Result<()> {
             }
 
             writer.finalize()?;
+
             let mut ctx = ChartBuilder::on(&root)
                 .set_label_area_size(LabelAreaPosition::Left, 40)
                 .set_label_area_size(LabelAreaPosition::Bottom, 40)
@@ -149,7 +147,6 @@ fn main() -> Result<()> {
         }
         _ => panic!("can only pattern mono/stero,nun ov vat 5:1surroundsound biznes"),
     }
-
     Ok(())
 }
 fn mono_coordinates(spectrogram: &Vec<Vec<Complex<f32>>>) -> Vec<(usize, f64)> {

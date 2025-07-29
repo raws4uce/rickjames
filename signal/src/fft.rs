@@ -7,8 +7,8 @@ use rustfft::{
 };
 pub fn mono_stft(samples: Vec<f32>) -> Vec<Vec<Complex<f32>>> {
     //into frames
-    let win_size = 1024;
-    let hop = 512;
+    let win_size = 128;
+    let hop = 64;
     let mut frames: Vec<Vec<f32>> = Vec::new();
     for i in (0..samples.len()).step_by(hop) {
         let win_end = i + win_size;
@@ -52,8 +52,8 @@ pub fn mono_stft(samples: Vec<f32>) -> Vec<Vec<Complex<f32>>> {
 }
 pub fn stereo_stft(samples: Vec<(f32, f32)>) -> Vec<Vec<(Complex<f32>, Complex<f32>)>> {
     //into frames
-    let win_size = 1024;
-    let hop = 512;
+    let win_size = 128;
+    let hop = 64;
     let mut frames: Vec<Vec<(f32, f32)>> = Vec::new();
     for i in (0..samples.len()).step_by(hop) {
         let win_end = i + win_size;
