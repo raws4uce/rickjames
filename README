@@ -1,11 +1,11 @@
 im interested in audio.
-input .wav file from samples folder (mono,stereo | PCM - 16, 24, 32)
-applies short time fourier transform algorithm which gives you the spectrogram, 
-visualised by plotters crate. where the x axis is time (frames), y axis is the magnitude 
-for stereo, the red points represent the 1st channel (left), and black represents the 2nd channel (right)
+compatable with (mono,stereo | PCM - 16, 24, 32)
 
-optional masking of your audio where only top n% of frequencies are kept and the rest discarded
-Now outputs are accurate for (mono, stereo | bitrange - 16, 24, 32,)
+one executable allows you to mask audio of your choosing, it outputs visable and audible versions of the spectrogram
+optional masking of your audio where only top n% of frequencies are kept
+
+the other pp.rs preprocesses random 10s samples of audio into 100 x 128 matricies, which is parsed into .npy 
+teaching a model to detect genre, (rock, jazz, grime, electric, drum and bass)
 
 PROBLEM(S)
  
